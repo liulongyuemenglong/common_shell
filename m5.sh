@@ -1,8 +1,8 @@
 #!/usr/bin/expect
 set IP [lindex $argv 0]
 spawn ssh liulong_160@192.168.0.200
-expect "*Password:"
-send "12345\r"
+expect "*assword:"
+send "123456\r"
 expect "*Choice:"
 send "1\r"
 expect "*Choice:"
