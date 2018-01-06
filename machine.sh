@@ -4,13 +4,14 @@ function str_index() {
    str1=$1
    str2=$2
    result=$(echo $str1 | grep "${str2}")
-   if [ ["$result" != ""]]; then
-       return 1
-   else
+   echo "result=$result"
+   if [ -z $result ] ; then
+       echo "没有匹配到"
        return 0
+   else
+       return 1
    fi
 }
-
 PYENV_HOME=$HOME/.pyenv
 if [ ! -e /usr/bin/zsh ]
 then
@@ -46,15 +47,19 @@ else
     echo "pyenv已安装"
 fi
 echo "安装python"
-exists=str_index $(pyenv versions) "2.7.12"
-if [ exists > 0 ] ; then
+pythons=$(pyenv versions | sed 's/*//g' | sed 's/ //g' | sed ":a;N;s/\n//g;ta")
+str_index ''$pythons "2.7.12"
+exists=$?
+echo "exists=$exists"
+if [ "$exists"!="0" ] ; then
     echo "python2.7.12已安装"
 else
     echo "安装python2.7.12"
     pyenv install 2.7.12
 fi
-exists=str_index $(pyenv versions) "3.6.0"
-if [ exists > 0 ] ; then
+str_index $pythons "3.6.0"
+exists=$?
+if [ "$exists"!="0" ] ; then
     echo "python3.6.0已安装"
 else
     echo "安装python3.6.0"
