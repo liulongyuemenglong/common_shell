@@ -1,5 +1,6 @@
 #!/bin/bash
 # 通用机器安装环境
+set -e
 function str_index() {
    str1=$1
    str2=$2
@@ -14,10 +15,16 @@ function str_index() {
    fi
 }
 PYENV_HOME=$HOME/.pyenv
+OS=0 #0:ubuntu 1:centos
+INSTALL=apt
+if [ $OS -eq 1 ]; then
+    INSTALL= yum
+fi
+
 if [ ! -e /usr/bin/zsh ]
 then
     echo "安装zsh"
-    sudo yum install zsh
+    sudo $INSTALL install zsh
 else
     echo "zsh已安装"
 fi
@@ -31,16 +38,23 @@ fi
 if [ ! -d $PYENV_HOME ]
 then
     echo "安装pyenv"
-    sudo yum install readline readline-devel readline-static -y
-    sudo yum install openssl openssl-devel openssl-static -y
-    sudo yum install sqlite-devel -y
-    sudo yum install bzip2-devel bzip2-libs -y
+    if [ $OS -eq 1]; then
+    	sudo yum install readline readline-devel readline-static -y
+    	sudo yum install openssl openssl-devel openssl-static -y
+    	sudo yum install sqlite-devel -y
+    	sudo yum install bzip2-devel bzip2-libs -y
+    elif [ $OS -eq 0 ]; then
+        sudo apt-get -y install build-essential libssl-dev libevent-dev libjpeg-dev libxml2-dev
+        sudo apt-get -y install libxslt-dev
+        sudo apt-get -y install libmysqlclient-dev
+        sudo apt-get -y install zlib1g-dev
+    fi
 	
     echo "下载pyenv"
     git clone git://github.com/yyuu/pyenv.git ~/.pyenv
     
     echo "export PYENV_ROOT=$PYENV_HOME " >> ~/.zshrc
-    echo "export PATH =\$PYENV_ROOT/bin:\$PATH " >> ~/.zshrc
+    echo "export PATH=\$PYENV_ROOT/bin:\$PATH " >> ~/.zshrc
     echo "eval \"\$(pyenv init -)\"" >> ~/.zshrc
 
     source ~/.zshrc
@@ -52,7 +66,7 @@ pythons=$(pyenv versions | sed 's/*//g' | sed 's/ //g' | sed ":a;N;s/\n//g;ta")
 str_index ''$pythons "2.7.12"
 exists=$?
 echo "exists=$exists"
-if [ "$exists"!="0" ] ; then
+if [ $exists -eq 1 ] ; then
     echo "python2.7.12已安装"
 else
     echo "安装python2.7.12"
@@ -60,7 +74,7 @@ else
 fi
 str_index $pythons "3.6.0"
 exists=$?
-if [ "$exists"!="0" ] ; then
+if [ $exists -eq 1 ] ; then
     echo "python3.6.0已安装"
 else
     echo "安装python3.6.0"
@@ -84,7 +98,10 @@ else
     pip install virtualenvwrapper
     echo "创建virtualenv home"
     mkdir -p /data/server/virtualenvs
+    echo "export VIRTUALENVWRAPPER_PYTHON=$HOME/.pyenv/versions/2.7.12/bin/python" >>$HOME/.zshrc
+    echo "export VIRTUALENVWRAPPER_VIRTUALENV=$HOME/.pyenv/versions/2.7.12/bin/virtualenv" >>$HOME/.zshrc
     echo "export WORKON_HOME=/data/server/virtualenvs" >>$HOME/.zshrc
-    echo "source  /home/web/.pyenv/versions/2.7.12/bin/virtualenvwrapper.sh"  >>$HOME/.zshrc
+    echo "source  $HOME/.pyenv/versions/2.7.12/bin/virtualenvwrapper.sh"  >>$HOME/.zshrc
+    source $HONE/.zshrc
     echo "完成安装虚拟环境"
 fi
