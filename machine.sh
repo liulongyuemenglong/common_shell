@@ -3,8 +3,9 @@
 function str_index() {
    str1=$1
    str2=$2
+   echo "str1="$str1
+   echo "str2="$str2
    result=$(echo $str1 | grep "${str2}")
-   echo "result=$result"
    if [ -z $result ] ; then
        echo "没有匹配到"
        return 0
@@ -65,5 +66,25 @@ else
     echo "安装python3.6.0"
     pyenv install 3.6.0
 fi
-
-    
+pyenv global 2.7.12
+echo $(type python)
+has_virtualenv=$(pip show virtualenv | sed 's/*//g' | sed 's/ //g' | sed ":a;N;s/\n//g;ta")
+if [ $has_virtualenv="" ]; then
+    has_virtualenv="test"
+fi
+str_index $has_virtualenv 'virtualenv'
+exists=$?
+echo "virtualenv result=$exists"
+if [ $exists -eq 1 ] ; then
+    echo "已经安装virtualenv"
+else
+    echo "安装virtualenv"
+    pip install virtualenv
+    echo "安装virtualenvwrapper"
+    pip install virtualenvwrapper
+    echo "创建virtualenv home"
+    mkdir -p /data/server/virtualenvs
+    echo "export WORKON_HOME=/data/server/virtualenvs" >>$HOME/.zshrc
+    echo "source  /home/web/.pyenv/versions/2.7.12/bin/virtualenvwrapper.sh"  >>$HOME/.zshrc
+    echo "完成安装虚拟环境"
+fi
