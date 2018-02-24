@@ -1,6 +1,5 @@
 #!/bin/bash
 # 通用机器安装环境
-set -e
 function str_index() {
    str1=$1
    str2=$2
@@ -32,6 +31,7 @@ if [ ! -d ~/.oh-my-zsh ]
 then
     echo "安装oh-my-zsh" 
     /bin/sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    cp zshrc ~/.zshrc
 else
     echo "oh-my-zsh已安装"
 fi
