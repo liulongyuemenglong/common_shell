@@ -20,6 +20,14 @@ if [ $OS -eq 1 ]; then
     INSTALL= yum
 fi
 
+if [ ! -e /usr/bin/git ]
+then
+    echo "安装git"
+    sudo $INSTALL install git
+else
+    echo "git已安装"
+fi
+
 if [ ! -e /usr/bin/zsh ]
 then
     echo "安装zsh"
